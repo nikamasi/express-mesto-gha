@@ -2,10 +2,14 @@ const express = require('express');
 const path = require("path");
 const { cardsRouter } = require("./routes/cards");
 const { usersRouter } = require("./routes/users");
-
+const mongoose = require('mongoose');
 const { PORT = 3000 } = process.env;
-
 const app = express();
+
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: false
+})
 
 app.use((req, res, next) => {
   req.user = {
@@ -19,11 +23,4 @@ app.use("/cards", cardsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server started: ${PORT}.`)
-})
-
-const mongoose = require('mongoose');
-
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: false
 })
