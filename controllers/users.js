@@ -52,8 +52,11 @@ const updateUser = (req, res) => {
   if (about) {
     toUpdate["about"] = about;
   }
-  User.findByIdAndUpdate(req.user._id, toUpdate)
+  User.findByIdAndUpdate(req.user._id, toUpdate, { new: true })
     .then((user) => {
+      if (!user) {
+        return res.status(404).send({message: "User not found"})
+      }
       res.status(200).send(user);
     })
     .catch((e) => {
@@ -67,7 +70,7 @@ const updateAvatar = (req, res) => {
     res.status(400).send({ message: "'avatar' field is required" });
     return;
   }
-  User.findByIdAndUpdate(req.user._id, { avatar: avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar: avatar }, { new: true })
     .then((data) => res.send({ data: data }))
     .catch((e) => {
       res.status(500).send({ message: e.message });

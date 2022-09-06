@@ -13,7 +13,6 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
-  // const owner = "631797b3817c8b22121274ec";
   Card.create({ owner, name, link })
     .then((card) => {
       res.status(201).send(card);
@@ -53,7 +52,6 @@ const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    // { $addToSet: { likes: "631797b3817c8b22121274ec" } },
     { new: true }
   )
     .then((data) => {
@@ -73,7 +71,6 @@ const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    // { $pull: { likes: "631797b3817c8b22121274ec" } },
     { new: true }
   )
     .then((data) => {

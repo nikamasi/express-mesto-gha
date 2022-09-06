@@ -7,13 +7,14 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use((req, res, next) => {
+  req.user = {
+    _id: '631797b3817c8b22121274ec'
+  };
+  next();
+});
 app.use("/users", usersRouter);
 app.use("/cards", cardsRouter);
-
-req.user = {
-  _id: '5d8b8592978f8bd833ca8133'
-};
 
 
 app.listen(PORT, () => {
