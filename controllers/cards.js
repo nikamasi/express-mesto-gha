@@ -1,12 +1,13 @@
+const { StatusCodes } = require('http-status-codes');
 const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => {
-      res.status(200).send(cards);
+      res.send(cards);
     })
     .catch((e) => {
-      res.status(500).send({ message: e.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 
@@ -15,13 +16,13 @@ const createCard = (req, res) => {
   const owner = req.user._id;
   Card.create({ owner, name, link })
     .then((card) => {
-      res.status(201).send(card);
+      res.status(StatusCodes.CREATED).send(card);
     })
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        return res.status(400).send({ message: e.message });
+        return res.status(StatusCodes.BAD_REQUEST).send({ message: e.message });
       }
-      return res.status(500).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 
@@ -31,16 +32,16 @@ const deleteCard = (req, res) => {
     .then((data) => {
       if (!data) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ message: 'A picture with this id does not exist' });
       }
-      return res.status(200).send(data);
+      return res.send(data);
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid id' });
+        return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
       }
-      return res.status(500).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 
@@ -53,16 +54,16 @@ const likeCard = (req, res) => {
     .then((data) => {
       if (!data) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ message: 'A picture with this id does not exist' });
       }
-      return res.status(200).send({ message: data });
+      return res.send({ message: data });
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid id' });
+        return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
       }
-      return res.status(500).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 
@@ -75,16 +76,16 @@ const dislikeCard = (req, res) => {
     .then((data) => {
       if (!data) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ message: 'A picture with this id does not exist' });
       }
-      return res.status(200).send(data);
+      return res.send(data);
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid id' });
+        return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
       }
-      return res.status(500).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
     });
 };
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { StatusCodes } = require('http-status-codes');
 const { cardsRouter } = require('./routes/cards');
 const { usersRouter } = require('./routes/users');
 
@@ -21,7 +22,7 @@ app.use((req, res, next) => {
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 app.use((req, res) => {
-  res.status(404).send({ message: 'Not found' });
+  res.status(StatusCodes.NOT_FOUND).send({ message: 'Not found' });
 });
 
 app.listen(PORT);
