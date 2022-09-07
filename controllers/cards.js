@@ -27,24 +27,21 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
-  // eslint-disable-next-line consistent-return
-  Card.findById(cardId).then((card) => {
-    if (card.owner !== req.user._id) {
-      return res
-        .status(403)
-        .send({ message: 'Only the owner can delete the picture.' });
-    }
-    Card.findByIdAndRemove(cardId)
-      .then((data) => {
-        if (!data) {
-          return res
-            .status(404)
-            .send({ message: 'A picture with this id does not exist' });
-        }
-        return res.status(200).send(data);
-      })
-      .catch((e) => res.status(500).send({ message: e.message }));
-  });
+  Card.findByIdAndRemove(cardId)
+    .then((data) => {
+      if (!data) {
+        return res
+          .status(404)
+          .send({ message: 'A picture with this id does not exist' });
+      }
+      return res.status(200).send(data);
+    })
+    .catch((e) => {
+      if (e.name === 'CastError') {
+        return res.status(400).send({ message: 'Invalid id' });
+      }
+      return res.status(500).send({ message: e.message });
+    });
 };
 
 const likeCard = (req, res) => {

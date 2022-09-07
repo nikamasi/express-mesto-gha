@@ -43,14 +43,7 @@ const updateUser = (req, res) => {
     res.status(400).send({ message: "'name' or 'about' fields are required" });
     return;
   }
-  const toUpdate = {};
-  if (name) {
-    toUpdate.name = name;
-  }
-  if (about) {
-    toUpdate.about = about;
-  }
-  User.findByIdAndUpdate(req.user._id, toUpdate, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: 'User not found' });
@@ -59,9 +52,9 @@ const updateUser = (req, res) => {
     })
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        res.status(400).send({ message: e.message });
+        return res.status(400).send({ message: e.message });
       }
-      res.status(500).send({ message: e.message });
+      return res.status(500).send({ message: e.message });
     });
 };
 

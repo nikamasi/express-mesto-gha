@@ -17,7 +17,11 @@ app.use((req, res, next) => {
   };
   next();
 });
+
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
+app.use((req, res) => {
+  res.status(404).send({ message: 'Not found' });
+});
 
 app.listen(PORT);
