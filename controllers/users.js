@@ -1,11 +1,9 @@
-const User = require("../models/user");
+const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((e) => {
-      res.status(500).send({ message: e.message });
-  });
+    .catch((e) => res.status(500).send({ message: e.message }));
 };
 
 const getUserById = (req, res) => {
@@ -14,14 +12,14 @@ const getUserById = (req, res) => {
       if (user) {
         res.status(200).send(user);
       } else {
-        res.status(404).send({ message: "A user with this id does not exist" });
+        res.status(404).send({ message: 'A user with this id does not exist' });
       }
     })
     .catch((e) => {
-      if (e.name === "CastError") {
-        return res.status(400).send({ message: "Invalid id" });
+      if (e.name === 'CastError') {
+        return res.status(400).send({ message: 'Invalid id' });
       }
-      res.status(400).send({ message: e.message });
+      return res.status(400).send({ message: e.message });
     });
 };
 
@@ -32,7 +30,7 @@ const createUser = (req, res) => {
       res.status(201).send(data);
     })
     .catch((e) => {
-      if (e.name === "ValidatorError") {
+      if (e.name === 'ValidatorError') {
         res.status(400).send({ message: e.message });
       }
       res.status(500).send({ message: e.message });
@@ -47,17 +45,17 @@ const updateUser = (req, res) => {
   }
   const toUpdate = {};
   if (name) {
-    toUpdate["name"] = name;
+    toUpdate.name = name;
   }
   if (about) {
-    toUpdate["about"] = about;
+    toUpdate.about = about;
   }
   User.findByIdAndUpdate(req.user._id, toUpdate, { new: true })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({message: "User not found"})
+        return res.status(404).send({ message: 'User not found' });
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((e) => {
       res.status(500).send({ message: e.message });
@@ -70,8 +68,8 @@ const updateAvatar = (req, res) => {
     res.status(400).send({ message: "'avatar' field is required" });
     return;
   }
-  User.findByIdAndUpdate(req.user._id, { avatar: avatar }, { new: true })
-    .then((data) => res.send({ data: data }))
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .then((data) => res.send({ data }))
     .catch((e) => {
       res.status(500).send({ message: e.message });
     });
