@@ -38,10 +38,10 @@ const deleteCard = (req, res) => {
       .then((data) => {
         if (!data) {
           return res
-            .status(400)
+            .status(404)
             .send({ message: 'A picture with this id does not exist' });
         }
-        return res.status(204).send({});
+        return res.status(200).send(data);
       })
       .catch((e) => res.status(500).send({ message: e.message }));
   });
@@ -56,13 +56,16 @@ const likeCard = (req, res) => {
     .then((data) => {
       if (!data) {
         return res
-          .status(400)
+          .status(404)
           .send({ message: 'A picture with this id does not exist' });
       }
       return res.status(200).send({ message: data });
     })
     .catch((e) => {
-      res.status(500).send({ message: e.message });
+      if (e.name === 'CastError') {
+        return res.status(400).send({ message: 'Invalid id' });
+      }
+      return res.status(500).send({ message: e.message });
     });
 };
 
@@ -75,13 +78,16 @@ const dislikeCard = (req, res) => {
     .then((data) => {
       if (!data) {
         return res
-          .status(400)
+          .status(404)
           .send({ message: 'A picture with this id does not exist' });
       }
-      return res.status(204).send({});
+      return res.status(200).send(data);
     })
     .catch((e) => {
-      res.status(500).send({ message: e.message });
+      if (e.name === 'CastError') {
+        return res.status(400).send({ message: 'Invalid id' });
+      }
+      return res.status(500).send({ message: e.message });
     });
 };
 

@@ -30,7 +30,7 @@ const createUser = (req, res) => {
       res.status(201).send(data);
     })
     .catch((e) => {
-      if (e.name === 'ValidatorError') {
+      if (e.name === 'ValidationError') {
         res.status(400).send({ message: e.message });
       }
       res.status(500).send({ message: e.message });
@@ -58,6 +58,9 @@ const updateUser = (req, res) => {
       return res.status(200).send(user);
     })
     .catch((e) => {
+      if (e.name === 'ValidationError') {
+        res.status(400).send({ message: e.message });
+      }
       res.status(500).send({ message: e.message });
     });
 };
