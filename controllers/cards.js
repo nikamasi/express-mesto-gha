@@ -6,8 +6,8 @@ const getCards = (req, res) => {
     .then((cards) => {
       res.send(cards);
     })
-    .catch((e) => {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+    .catch(() => {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
@@ -22,7 +22,7 @@ const createCard = (req, res) => {
       if (e.name === 'ValidationError') {
         return res.status(StatusCodes.BAD_REQUEST).send({ message: e.message });
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
@@ -41,7 +41,7 @@ const deleteCard = (req, res) => {
       if (e.name === 'CastError') {
         return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
@@ -63,7 +63,7 @@ const likeCard = (req, res) => {
       if (e.name === 'CastError') {
         return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
@@ -85,7 +85,7 @@ const dislikeCard = (req, res) => {
       if (e.name === 'CastError') {
         return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 

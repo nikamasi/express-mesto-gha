@@ -4,7 +4,7 @@ const User = require('../models/user');
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((e) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message }));
+    .catch(() => res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' }));
 };
 
 const getUserById = (req, res) => {
@@ -20,7 +20,7 @@ const getUserById = (req, res) => {
       if (e.name === 'CastError') {
         return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
@@ -32,9 +32,9 @@ const createUser = (req, res) => {
     })
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        res.status(StatusCodes.BAD_REQUEST).send({ message: e.message });
+        return res.status(StatusCodes.BAD_REQUEST).send({ message: e.message });
       }
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
@@ -55,7 +55,7 @@ const updateUser = (req, res) => {
       if (e.name === 'ValidationError') {
         return res.status(StatusCodes.BAD_REQUEST).send({ message: e.message });
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
@@ -66,9 +66,14 @@ const updateAvatar = (req, res) => {
     return;
   }
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
-    .then((data) => res.send({ data }))
-    .catch((e) => {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: e.message });
+    .then((data) => {
+      if (!data) {
+        return res.status(StatusCodes.NOT_FOUND).send({ message: 'User not found' });
+      }
+      return res.send({ data });
+    })
+    .catch(() => {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
