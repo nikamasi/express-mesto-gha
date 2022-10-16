@@ -1,17 +1,21 @@
 const { StatusCodes } = require('http-status-codes');
+const BadRequestError = require('../errors/BadRequestError');
+const AccessDeniedError = require('../errors/AccessDeniedError');
+const NotFoundError = require('../errors/NotFoundError');
+const ServerError = require('../errors/ServerError');
 const Card = require('../models/card');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       res.send(cards);
     })
     .catch(() => {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
+      next(new ServerError());
     });
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ owner, name, link })
@@ -20,32 +24,36 @@ const createCard = (req, res) => {
     })
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        return res.status(StatusCodes.BAD_REQUEST).send({ message: e.message });
+        next(new BadRequestError(e.message));
+      } else {
+        next(new ServerError());
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
-    .then((data) => {
-      if (!data) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .send({ message: 'A picture with this id does not exist' });
+  Card.findById(cardId)
+    .then((cardFound) => {
+      if (!cardFound) {
+        return next(new NotFoundError('A picture with this id does not exist'));
       }
-      return res.send(data);
+      if (cardFound.owner.toString() !== req.user._id) {
+        return next(new AccessDeniedError('Not allowed to remove other users pictures'));
+      }
+      return Card.findByIdAndRemove(cardId)
+        .then((data) => res.send(data));
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
+        next(new BadRequestError('Invalid id'));
+      } else {
+        next(new ServerError());
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -53,21 +61,20 @@ const likeCard = (req, res) => {
   )
     .then((data) => {
       if (!data) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .send({ message: 'A picture with this id does not exist' });
+        return next(new NotFoundError('A picture with this id does not exist'));
       }
       return res.send({ message: data });
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
+        next(new BadRequestError('Invalid id'));
+      } else {
+        next(new ServerError());
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -75,17 +82,16 @@ const dislikeCard = (req, res) => {
   )
     .then((data) => {
       if (!data) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .send({ message: 'A picture with this id does not exist' });
+        return next(new NotFoundError('A picture with this id does not exist'));
       }
       return res.send(data);
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        return res.status(StatusCodes.BAD_REQUEST).send({ message: 'Invalid id' });
+        next(new BadRequestError('Invalid id'));
+      } else {
+        next(new ServerError());
       }
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
     });
 };
 
