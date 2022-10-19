@@ -106,9 +106,7 @@ const updateAvatar = (req, res, next) => {
       }
       return res.send({ data });
     })
-    .catch(() => {
-      next(new ServerError());
-    });
+    .catch(next);
 };
 
 module.exports = {

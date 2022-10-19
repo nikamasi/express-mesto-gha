@@ -5,7 +5,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getUserById, updateUser, updateAvatar, getCurrentUser,
 } = require('../controllers/users');
-const { urlRegex, mongooseIdRegex } = require('../utils/regex');
+const { urlRegex } = require('../utils/regex');
 
 usersRouter.get('/', getUsers);
 
@@ -13,7 +13,7 @@ usersRouter.get('/me', getCurrentUser);
 
 usersRouter.get('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().regex(mongooseIdRegex).required(),
+    userId: Joi.string().hex().required(),
   }),
 }), getUserById);
 

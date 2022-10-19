@@ -1,6 +1,6 @@
 const express = require('express');
 const { celebrate, Joi } = require('celebrate');
-const { urlRegex, mongooseIdRegex } = require('../utils/regex');
+const { urlRegex } = require('../utils/regex');
 
 const cardsRouter = express.Router();
 const {
@@ -22,19 +22,19 @@ cardsRouter.post('/', celebrate({
 
 cardsRouter.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().regex(mongooseIdRegex).required(),
+    cardId: Joi.string().hex().required(),
   }),
 }), dislikeCard);
 
 cardsRouter.delete('/:cardId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().regex(mongooseIdRegex).required(),
+    cardId: Joi.string().hex().required(),
   }),
 }), deleteCard);
 
 cardsRouter.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().regex(mongooseIdRegex).required(),
+    cardId: Joi.string().hex().required(),
   }),
 }), likeCard);
 

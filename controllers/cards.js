@@ -10,9 +10,7 @@ const getCards = (req, res, next) => {
     .then((cards) => {
       res.send(cards);
     })
-    .catch(() => {
-      next(new ServerError());
-    });
+    .catch(next);
 };
 
 const createCard = (req, res, next) => {
