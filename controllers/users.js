@@ -15,14 +15,8 @@ const getUsers = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (user) {
-        res.send(user);
-      } else {
-        next(new NotFoundError('A user with this id does not exist'));
-      }
-    })
+  User.findById(req.params.userId).orFail(() => next(new NotFoundError('A user with this id does not exist')))
+    .then((user) => res.send(user))
     .catch((e) => {
       if (e.name === 'CastError') {
         next(new BadRequestError('Invalid id'));

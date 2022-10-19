@@ -31,11 +31,8 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  Card.findById(cardId)
+  Card.findById(cardId).orFail(() => next(new NotFoundError('A picture with this id does not exist')))
     .then((cardFound) => {
-      if (!cardFound) {
-        return next(new NotFoundError('A picture with this id does not exist'));
-      }
       if (cardFound.owner.toString() !== req.user._id) {
         return next(new AccessDeniedError('Not allowed to remove other users pictures'));
       }
