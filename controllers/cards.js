@@ -2,7 +2,6 @@ const { StatusCodes } = require('http-status-codes');
 const BadRequestError = require('../errors/BadRequestError');
 const AccessDeniedError = require('../errors/AccessDeniedError');
 const NotFoundError = require('../errors/NotFoundError');
-const ServerError = require('../errors/ServerError');
 const Card = require('../models/card');
 
 const getCards = (req, res, next) => {
@@ -24,7 +23,7 @@ const createCard = (req, res, next) => {
       if (e.name === 'ValidationError') {
         next(new BadRequestError(e.message));
       } else {
-        next(new ServerError());
+        next(e);
       }
     });
 };
@@ -43,7 +42,7 @@ const deleteCard = (req, res, next) => {
       if (e.name === 'CastError') {
         next(new BadRequestError('Invalid id'));
       } else {
-        next(new ServerError());
+        next(e);
       }
     });
 };
@@ -64,7 +63,7 @@ const likeCard = (req, res, next) => {
       if (e.name === 'CastError') {
         next(new BadRequestError('Invalid id'));
       } else {
-        next(new ServerError());
+        next(e);
       }
     });
 };
@@ -85,7 +84,7 @@ const dislikeCard = (req, res, next) => {
       if (e.name === 'CastError') {
         next(new BadRequestError('Invalid id'));
       } else {
-        next(new ServerError());
+        next(e);
       }
     });
 };

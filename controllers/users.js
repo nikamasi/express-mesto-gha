@@ -5,13 +5,12 @@ const BadRequestError = require('../errors/BadRequestError');
 const AuthError = require('../errors/AuthError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
-const ServerError = require('../errors/ServerError');
 const User = require('../models/user');
 
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => next(new ServerError()));
+    .catch(next);
 };
 
 const getUserById = (req, res, next) => {
@@ -21,7 +20,7 @@ const getUserById = (req, res, next) => {
       if (e.name === 'CastError') {
         next(new BadRequestError('Invalid id'));
       } else {
-        next(new ServerError());
+        next(e);
       }
     });
 };
@@ -51,7 +50,7 @@ const createUser = (req, res, next) => {
           } else if (e.code === 11000) {
             next(new ConflictError('A user with this email already exists.'));
           } else {
-            next(new ServerError());
+            next(e);
           }
         });
     });
@@ -86,7 +85,7 @@ const updateUser = (req, res, next) => {
       if (e.name === 'ValidationError') {
         next(new BadRequestError(e.message));
       } else {
-        next(new ServerError());
+        next(e);
       }
     });
 };
