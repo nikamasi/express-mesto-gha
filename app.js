@@ -7,6 +7,8 @@ const { createUser, login } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
 const { urlRegex } = require('./utils/regex');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cors = require('./middlewares/cors');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -17,6 +19,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(express.json());
+app.use(requestLogger);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -40,6 +43,10 @@ app.use('/cards', auth, cardsRouter);
 app.use((req, res, next) => {
   next(new NotFoundError('Invalid URL or request method.'));
 });
+
+app.use(cors);
+
+app.use(errorLogger);
 
 app.use(errors());
 // eslint-disable-next-line no-unused-vars
